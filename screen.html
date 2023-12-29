@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title> SBUL: Simple Basic Uniform Language </title>
+</head>
+
+<body>
+
+    <pre id="stdout"></pre>
+    <hr>
+
+    <button onclick="execute_program(program.textContent)">execute program</button>
+
+    <pre id="program" contenteditable="">
+.comment test 1
+.local_variable_set:2 "string_output" ""
+.append:2 "string_output" "count:+(+"
+.append:2 "string_output" .array_count:1 [1,2,3,4]
+.append:2 "string_output" "+)\n"
+.console_log:1 .local_variable_get:1 "string_output"
+    </pre>
+
+    <script src="behave.js"></script>
+
+</body>
+
+</html>
