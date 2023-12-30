@@ -4,7 +4,8 @@ var local_variables = {}
 
 function line_part_eval(line_parts, index) {
     var line_part = line_parts[index]
-
+    line_part = line_part.replace(/\+/g, " ")
+    
     if (line_part == ".comment") return
 
     if (line_part[0] == ".") {
@@ -33,7 +34,6 @@ function line_part_eval(line_parts, index) {
 
     } else {
         var json = JSON.parse(line_part)
-        if (typeof json == "string") json = json.replace(/\+/g, " ")
         return json
     }
 }
