@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title> SBUL: Simple Basic Uniform Language </title>
+</head>
+
+<body>
+
+    <pre id="stdout"></pre>
+    <hr>
+
+    <button onclick="parse(); run();">parse and run</button>
+    <button onclick="parse()">parse</button>
+    <button onclick="run()">run</button>
+
+    <pre id="program" contenteditable="">
+        {
+            "type": "code_block", "parts": [
+                { "type": "comment:1", "parts": [{ "type": "json", "parts": ["test 1"] }] },
+                { "type": "local_variable_set:2", "parts": [{ "type": "json", "parts": ["string_output"] }, { "type": "json", "parts": [""] }] },
+                { "type": "append:2", "parts": [{ "type": "json", "parts": ["string_output"] }, { "type": "json", "parts": ["count ( "] }] },
+                { "type": "append:2", "parts": [{ "type": "json", "parts": ["string_output"] }, { "type": "array_count:1", "parts": [{ "type": "json", "parts": [[1, 2, 3, 4]] }] }] },
+                { "type": "append:2", "parts": [{ "type": "json", "parts": ["string_output"] }, { "type": "json", "parts": [" )\n"] }] },
+                { "type": "console_log:1", "parts": [{ "type": "local_variable_get:1", "parts": [{ "type": "json", "parts": ["string_output"] }] }] }
+            ]
+        }
+    </pre>
+
+    <script>
+
+        // sbul: simple-basic-uniform-language
+
+        function write(text) {
+            console.log(text)
+            stdout.textContent += text
+        }
+
+        /*
+        .comment:1 "test 1"
+        .local_variable_set:2 "string_output" ""
+        .append:2 "string_output" "count:+(+"
+        .append:2 "string_output" .array_count:1 [1,2,3,4]
+        .append:2 "string_output" "+)\n"
+        .console_log:1 .local_variable_get:1 "string_output"
+        */
+
+        var json_program = {
+            "type": "code_block", "parts": [
+                { "type": "comment:1", "parts": [{ "type": "json", "parts": ["test 1"] }] },
+                { "type": "local_variable_set:2", "parts": [{ "type": "json", "parts": ["string_output"] }, { "type": "json", "parts": [""] }] },
+                { "type": "append:2", "parts": [{ "type": "json", "parts": ["string_output"] }, { "type": "json", "parts": ["count ( "] }] },
+                { "type": "append:2", "parts": [{ "type": "json", "parts": ["string_output"] }, { "type": "array_count:1", "parts": [{ "type": "json", "parts": [[1, 2, 3, 4]] }] }] },
+                { "type": "append:2", "parts": [{ "type": "json", "parts": ["string_output"] }, { "type": "json", "parts": [" )\n"] }] },
+                { "type": "console_log:1", "parts": [{ "type": "local_variable_get:1", "parts": [{ "type": "json", "parts": ["string_output"] }] }] }
+            ]
+        }
+
+        function evaluate(item, namespace) {
+            if (item.type == "code_block") {
+                for (var statement of item.parts) {
+                    evaluate(statement, namespace)
+                }
+                return
+            }
+            if (item.type == "comment:1") return
+            if (item.type == "json") return item.parts[0]
+            if (item.type == "local_variable_set:2") {
+                namespace[evaluate(item.parts[0], namespace)] = evaluate(item.parts[1], namespace)
+                return
+            }
+            if (item.type == "append:2") {
+                namespace[evaluate(item.parts[0], namespace)] += evaluate(item.parts[1], namespace)
+                return
+            }
+            if (item.type == "array_count:1") return evaluate(item.parts[0], namespace).length
+            if (item.type == "console_log:1") {
+                var text = evaluate(item.parts[0], namespace)
+                write(text)
+                return
+            }
+            if (item.type == "local_variable_get:1") {
+                return namespace[evaluate(item.parts[0], namespace)]
+            }
+        }
+        function parse() {
+            try {
+                json_program = JSON.parse(program.textContent)
+            }
+            catch (err) {
+                write(err.stack + "\n")
+            }
+
+        }
+        function run() {
+            evaluate(json_program, {})
+        }
+
+    </script>
+
+</body>
+
+</html>
