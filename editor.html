@@ -12,90 +12,86 @@
     <pre id="stdout"></pre>
     <hr>
 
-    <button onclick="parse(); run();">parse and run</button>
-    <button onclick="parse()">parse</button>
-    <button onclick="run()">run</button>
+    <button onclick="execute(parse(program_text.textContent))">Parse program and Execute program.</button>
+    <button onclick="if(parse(program_text.textContent)) console_write('Current program was parsed fine.\n')">Parse
+        program.</button>
 
-    <pre id="program" contenteditable="">
-        {
-            "type": "code_block", "parts": [
-                { "type": "comment:1", "parts": [{ "type": "json", "parts": ["test 1"] }] },
-                { "type": "local_variable_set:2", "parts": [{ "type": "json", "parts": ["string_output"] }, { "type": "json", "parts": [""] }] },
-                { "type": "append:2", "parts": [{ "type": "json", "parts": ["string_output"] }, { "type": "json", "parts": ["count ( "] }] },
-                { "type": "append:2", "parts": [{ "type": "json", "parts": ["string_output"] }, { "type": "array_count:1", "parts": [{ "type": "json", "parts": [[1, 2, 3, 4]] }] }] },
-                { "type": "append:2", "parts": [{ "type": "json", "parts": ["string_output"] }, { "type": "json", "parts": [" )\n"] }] },
-                { "type": "console_log:1", "parts": [{ "type": "local_variable_get:1", "parts": [{ "type": "json", "parts": ["string_output"] }] }] }
-            ]
-        }
+    <pre id="program_text" contenteditable="" style="border: 1px solid black; padding: 5px;">
+[
+"code_block",
+["comment", ["json", "test 1\n"]],
+["local_variable_set", ["json", "string_output"], ["json", ""]],
+["append", ["json", "string_output"], ["json", "count ( "]],
+["append", ["json", "string_output"], ["array_count", ["json",[1,2,3,4]]]],
+["append", ["json", "string_output"], ["json", " )\n"]],
+["console_log", ["local_variable_get", ["json", "string_output"]]]
+]
     </pre>
 
     <script>
 
-        // sbul: simple-basic-uniform-language
-
-        function write(text) {
+        function console_write(text) {
             console.log(text)
             stdout.textContent += text
         }
 
-        /*
-        .comment:1 "test 1"
-        .local_variable_set:2 "string_output" ""
-        .append:2 "string_output" "count:+(+"
-        .append:2 "string_output" .array_count:1 [1,2,3,4]
-        .append:2 "string_output" "+)\n"
-        .console_log:1 .local_variable_get:1 "string_output"
-        */
-
-        var json_program = {
-            "type": "code_block", "parts": [
-                { "type": "comment:1", "parts": [{ "type": "json", "parts": ["test 1"] }] },
-                { "type": "local_variable_set:2", "parts": [{ "type": "json", "parts": ["string_output"] }, { "type": "json", "parts": [""] }] },
-                { "type": "append:2", "parts": [{ "type": "json", "parts": ["string_output"] }, { "type": "json", "parts": ["count ( "] }] },
-                { "type": "append:2", "parts": [{ "type": "json", "parts": ["string_output"] }, { "type": "array_count:1", "parts": [{ "type": "json", "parts": [[1, 2, 3, 4]] }] }] },
-                { "type": "append:2", "parts": [{ "type": "json", "parts": ["string_output"] }, { "type": "json", "parts": [" )\n"] }] },
-                { "type": "console_log:1", "parts": [{ "type": "local_variable_get:1", "parts": [{ "type": "json", "parts": ["string_output"] }] }] }
-            ]
-        }
-
         function evaluate(item, namespace) {
-            if (item.type == "code_block") {
-                for (var statement of item.parts) {
-                    evaluate(statement, namespace)
-                }
-                return
+            var type = item[0]
+            if (type in types) {
+                var type_function = types[type]
+                return type_function(item, namespace)
             }
-            if (item.type == "comment:1") return
-            if (item.type == "json") return item.parts[0]
-            if (item.type == "local_variable_set:2") {
-                namespace[evaluate(item.parts[0], namespace)] = evaluate(item.parts[1], namespace)
-                return
-            }
-            if (item.type == "append:2") {
-                namespace[evaluate(item.parts[0], namespace)] += evaluate(item.parts[1], namespace)
-                return
-            }
-            if (item.type == "array_count:1") return evaluate(item.parts[0], namespace).length
-            if (item.type == "console_log:1") {
-                var text = evaluate(item.parts[0], namespace)
-                write(text)
-                return
-            }
-            if (item.type == "local_variable_get:1") {
-                return namespace[evaluate(item.parts[0], namespace)]
+            else {
+                console_write("error! type_function not found: " + type + "\n")
             }
         }
-        function parse() {
-            try {
-                json_program = JSON.parse(program.textContent)
-            }
-            catch (err) {
-                write(err.stack + "\n")
-            }
 
+        var types = {}
+
+        types.comment = function () { }
+
+        types.json = function (item) { return item[1] }
+
+        types.console_log = function (item, namespace) {
+            var what = item[1]
+            var text = evaluate(what, namespace)
+            console_write(text)
         }
-        function run() {
-            evaluate(json_program, {})
+
+        types.code_block = function (item, namespace) {
+            for (var statement of item.slice(1)) {
+                evaluate(statement, namespace)
+            }
+        }
+
+        types.local_variable_get = function (item, namespace) {
+            return namespace[evaluate(item[1], namespace)]
+        }
+
+        types.local_variable_set = function (item, namespace) {
+            var value = evaluate(item[2], namespace)
+            namespace[evaluate(item[1], namespace)] = value
+        }
+
+        types.array_count = function (item, namespace) {
+            var array = evaluate(item[1], namespace)
+            return array.length
+        }
+
+        types.append = function (item, namespace) {
+            namespace[evaluate(item[1], namespace)] += evaluate(item[2], namespace)
+        }
+
+        function parse(program_code) {
+            try {
+                return JSON.parse(program_code)
+            } catch (err) {
+                console_write(err.stack + "\n")
+            }
+        }
+
+        function execute(program_json) {
+            evaluate(program_json, {})
         }
 
     </script>
