@@ -25,7 +25,10 @@
 ["append", ["json", "string_output"], ["array_count", ["json", [1, 2, 3, 4]]]],
 ["append", ["json", "string_output"], ["json", " )\n"]],
 ["console_log", ["local_variable_get", ["json", "string_output"]]],
-["js_function", ["json", "alert"], ["json", "it works!"]],
+["if_then",
+["json", true],
+["js_function", ["json", "alert"], ["json", "it works!"]]
+],
 ["js_function", ["json", "alert"], ["js_function", ["json", "prompt"],
     ["json", "enter integer"],
     ["json", "10"]
@@ -43,7 +46,10 @@
             ["append", ["json", "string_output"], ["array_count", ["json", [1, 2, 3, 4]]]],
             ["append", ["json", "string_output"], ["json", " )\n"]],
             ["console_log", ["local_variable_get", ["json", "string_output"]]],
-            ["js_function", ["json", "alert"], ["json", "it works!"]],
+            ["if_then",
+                ["json", true],
+                ["js_function", ["json", "alert"], ["json", "it works!"]]
+            ],
             ["js_function", ["json", "alert"], ["js_function", ["json", "prompt"],
                 ["json", "enter integer"],
                 ["json", "10"]
@@ -92,6 +98,12 @@
         types.code_block = function (item, namespace) {
             for (var statement of item.slice(1)) {
                 evaluate(statement, namespace)
+            }
+        }
+
+        types.if_then = function (item, namespace) {
+            if (evaluate(item[1], namespace)) {
+                return evaluate(item[2], namespace)
             }
         }
 
