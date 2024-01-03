@@ -107,6 +107,14 @@
             }
         }
 
+        types.if_then_else = function (item, namespace) {
+            if (evaluate(item[1], namespace)) {
+                return evaluate(item[2], namespace)
+            } else {
+                return evaluate(item[3], namespace)
+            }
+        }
+
         types.local_variable_get = function (item, namespace) {
             return namespace[evaluate(item[1], namespace)]
         }
