@@ -1,0 +1,34 @@
+[
+    "js_function",
+    [
+        "json",
+        "console_write"
+    ],
+    [
+        "case_that_is_equal_to",
+        [
+            "json",
+            false
+        ],
+        [
+            [
+                "json",
+                true
+            ],
+            [
+                "json",
+                "case is true!\n"
+            ]
+        ],
+        [
+            [
+                "json",
+                false
+            ],
+            [
+                "json",
+                "case is false!\n"
+            ]
+        ]
+    ]
+]

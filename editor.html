@@ -117,6 +117,15 @@
             }
         }
 
+        types.case_that_is_equal_to = function (item, namespace) {
+            var cases = item.slice(2)
+            for (var case_current of cases) {
+                var equal_to_this = evaluate(item[1], namespace)
+                if (equal_to_this == evaluate(case_current[0], namespace))
+                    return evaluate(case_current[1], namespace)
+            }
+        }
+
         types.local_variable_get = function (item, namespace) {
             return namespace[evaluate(item[1], namespace)]
         }
