@@ -1,0 +1,8 @@
+["js_function", ["json", "console_write"],
+["comment",["json", "if_then_else can produce some output as execution result. akin to ternary operator of e.g. C language."]],
+["if_then_else",
+	["json", false],
+	["json", "it's true!"],
+	["json", "it's false!"]
+]
+]
