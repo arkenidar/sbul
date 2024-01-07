@@ -1,3 +1,4 @@
+<button onclick="location.reload()">reload this</button>
 <pre id="stdout"></pre>
 
 <script>
@@ -13,7 +14,7 @@
     }
 
     var current_step = 0
-    var steps = [1, 2, 3]
+    var steps = [1, 2, 3, 4, 5]
 
     function next_step() {
         setTimeout(step_of_while, 0)
@@ -30,9 +31,14 @@
 
         if (current_step >= steps.length) return
 
-        //next_step()
+        var stop_at_every_step = document.all.UI_stop_at_every_step.checked
+        var current_is_breakpoint = document.all.UI_breakpoints_list.value.split(",").indexOf(current_step.toString()) != -1
+        if (stop_at_every_step == false && current_is_breakpoint==false)
+            next_step()
     }
 
 </script>
 
+<label> <input type="checkbox" id="UI_stop_at_every_step">stop at every step</label>
 <button onclick="next_step()">next step</button>
+<input type="text" value="2,4" id="UI_breakpoints_list">
