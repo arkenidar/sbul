@@ -1,0 +1,38 @@
+<pre id="stdout"></pre>
+
+<script>
+
+    function console_write(...parameters) {
+        console.log(...parameters)
+        var text = parameters.join("|") + "\n"
+        stdout.textContent += text
+    }
+
+    function progression_step(step) {
+        console_write("step", step)
+    }
+
+    var current_step = 0
+    var steps = [1, 2, 3]
+
+    function next_step() {
+        setTimeout(step_of_while, 0)
+    }
+
+    function step_of_while() {
+        if (current_step >= steps.length) return
+
+        var step = steps[current_step]
+
+        progression_step(step)
+
+        current_step++
+
+        if (current_step >= steps.length) return
+
+        //next_step()
+    }
+
+</script>
+
+<button onclick="next_step()">next step</button>
