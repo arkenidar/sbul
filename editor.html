@@ -11,6 +11,7 @@
 
     <div><a href="https://github.com/arkenidar/sbul">github.com/arkenidar/sbul</a></div>
 
+    <button onclick="location.reload()">reload this</button>
     <pre id="stdout"></pre>
     <hr>
 
@@ -18,23 +19,18 @@
     <button onclick="if(parse(program_text.textContent)) console_write('Current program was parsed fine.\n')">Parse
         program.</button>
 
+    <label> <input type="checkbox" id="UI_stop_at_every_step">stop at every step</label>
+    <button onclick="next_step()">next step</button>
+    <input type="text" value="2,4" id="UI_breakpoints_list">
+
     <pre id="program_text" contenteditable="" style="border: 1px solid black; padding: 5px;">
 [
 "code_block",
-["comment", ["json", "test 1\n"]],
-["local_variable_set", ["json", "string_output"], ["json", ""]],
-["append", ["json", "string_output"], ["json", "count ( "]],
-["append", ["json", "string_output"], ["array_count", ["json", [1, 2, 3, 4]]]],
-["append", ["json", "string_output"], ["json", " )\n"]],
-["console_log", ["local_variable_get", ["json", "string_output"]]],
-["if_then",
-["json", true],
-["js_function", ["json", "alert"], ["json", "it works!"]]
-],
-["js_function", ["json", "alert"], ["js_function", ["json", "prompt"],
-    ["json", "enter integer"],
-    ["json", "10"]
-]]
+["console_log", ["json", "1\n"]],
+["console_log", ["json", "2\n"]],
+["console_log", ["json", "3\n"]],
+["console_log", ["json", "4\n"]],
+["console_log", ["json", "5\n"]]
 ]
     </pre>
 
@@ -64,8 +60,9 @@
             return globalThis[call_list[0]].call(globalThis, ...call_list.slice(1))
         }
 
-        function console_write(text) {
-            console.log(text)
+        function console_write(...parameters) {
+            console.log(...parameters)
+            var text = parameters.join("|")
             stdout.textContent += text
         }
 
@@ -98,8 +95,11 @@
         }
 
         types.code_block = function (item, namespace) {
+            var current_step = 0
             for (var statement of item.slice(1)) {
+                console.log("current_step", current_step + 1)
                 evaluate(statement, namespace)
+                current_step += 1
             }
         }
 
@@ -158,6 +158,7 @@
 
     </script>
 
+    <hr>
     <script src="https://arkenidar.com/web/show-source.js" data-href="?show-source"></script>
 
 </body>

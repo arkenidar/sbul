@@ -1,58 +1,61 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>inspect program using step-by-step</title>
 </head>
+
 <body>
 
-<div>inspect program using step-by-step (prototyping).</div>
+    <div>inspect program using step-by-step (prototyping).</div>
 
-<button onclick="location.reload()">reload this</button>
-<pre id="stdout"></pre>
+    <button onclick="location.reload()">reload this</button>
+    <pre id="stdout"></pre>
 
-<script>
+    <script>
 
-    function console_write(...parameters) {
-        console.log(...parameters)
-        var text = parameters.join("|") + "\n"
-        stdout.textContent += text
-    }
+        function console_write(...parameters) {
+            console.log(...parameters)
+            var text = parameters.join("|")
+            stdout.textContent += text
+        }
 
-    function progression_step(step) {
-        console_write("step", step)
-    }
+        function progression_step(step) {
+            console_write("step", step + "\n")
+        }
 
-    var current_step = 0
-    var steps = [1, 2, 3, 4, 5]
+        var current_step = 0
+        var steps = [1, 2, 3, 4, 5]
 
-    function next_step() {
-        setTimeout(step_of_while, 0)
-    }
+        function next_step() {
+            setTimeout(step_of_while, 0)
+        }
 
-    function step_of_while() {
-        if (current_step >= steps.length) return
+        function step_of_while() {
+            if (current_step >= steps.length) return
 
-        var step = steps[current_step]
+            var step = steps[current_step]
 
-        progression_step(step)
+            progression_step(step)
 
-        current_step++
+            current_step++
 
-        if (current_step >= steps.length) return
+            if (current_step >= steps.length) return
 
-        var stop_at_every_step = document.all.UI_stop_at_every_step.checked
-        var current_is_breakpoint = document.all.UI_breakpoints_list.value.split(",").indexOf(current_step.toString()) != -1
-        if (stop_at_every_step == false && current_is_breakpoint == false)
-            next_step()
-    }
+            var stop_at_every_step = document.all.UI_stop_at_every_step.checked
+            var current_is_breakpoint = document.all.UI_breakpoints_list.value.split(",").indexOf(current_step.toString()) != -1
+            if (stop_at_every_step == false && current_is_breakpoint == false)
+                next_step()
+        }
 
-</script>
+    </script>
 
-<label> <input type="checkbox" id="UI_stop_at_every_step">stop at every step</label>
-<button onclick="next_step()">next step</button>
-<input type="text" value="2,4" id="UI_breakpoints_list">
+    <label> <input type="checkbox" id="UI_stop_at_every_step">stop at every step</label>
+    <button onclick="next_step()">next step</button>
+    <input type="text" value="2,4" id="UI_breakpoints_list">
 
 </body>
+
 </html>
