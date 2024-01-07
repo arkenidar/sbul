@@ -1,3 +1,14 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>inspect program using step-by-step</title>
+</head>
+<body>
+
+<div>inspect program using step-by-step (prototyping).</div>
+
 <button onclick="location.reload()">reload this</button>
 <pre id="stdout"></pre>
 
@@ -33,7 +44,7 @@
 
         var stop_at_every_step = document.all.UI_stop_at_every_step.checked
         var current_is_breakpoint = document.all.UI_breakpoints_list.value.split(",").indexOf(current_step.toString()) != -1
-        if (stop_at_every_step == false && current_is_breakpoint==false)
+        if (stop_at_every_step == false && current_is_breakpoint == false)
             next_step()
     }
 
@@ -42,3 +53,6 @@
 <label> <input type="checkbox" id="UI_stop_at_every_step">stop at every step</label>
 <button onclick="next_step()">next step</button>
 <input type="text" value="2,4" id="UI_breakpoints_list">
+
+</body>
+</html>
