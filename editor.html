@@ -15,26 +15,49 @@
     <pre id="stdout"></pre>
     <hr>
 
-    <button onclick="execute(parse(program_text.textContent))">Parse program and Execute program.</button>
+
+    <button onclick="next_step()">Go!</button>
+    Current step <span id="UI_current_step">?</span>.
     <button onclick="if(parse(program_text.textContent)) console_write('Current program was parsed fine.\n')">Parse
         program.</button>
 
-    <label> <input type="checkbox" id="UI_stop_at_every_step">stop at every step</label>
+    <label> <input type="checkbox" id="UI_stop_at_every_step">stop at every step.</label>
     <button onclick="next_step()">next step</button>
-    <input type="text" value="2,4" id="UI_breakpoints_list">
+    breakpoints list. e.g. : "2,4".
+    <input type="text" value="5,6,7" id="UI_breakpoints_list" placeholder="breakpoints e.g. 2,4">
+    <label> <input type="checkbox" id="UI_ignore_breakpoints_list">ignore the break-points in the list.</label>
 
     <pre id="program_text" contenteditable="" style="border: 1px solid black; padding: 5px;">
 [
 "code_block",
-["console_log", ["json", "1\n"]],
-["console_log", ["json", "2\n"]],
-["console_log", ["json", "3\n"]],
-["console_log", ["json", "4\n"]],
-["console_log", ["json", "5\n"]]
+["comment", ["json", "test 1\n"]],
+["local_variable_set", ["json", "string_output"], ["json", ""]],
+["append", ["json", "string_output"], ["json", "count ( "]],
+["append", ["json", "string_output"], ["array_count", ["json", [1, 2, 3, 4]]]],
+["append", ["json", "string_output"], ["json", " )\n"]],
+["console_log", ["local_variable_get", ["json", "string_output"]]],
+["if_then",
+    ["json", true],
+    ["js_function", ["json", "alert"], ["json", "it works!"]]
+],
+["js_function", ["json", "alert"], ["js_function", ["json", "prompt"],
+    ["json", "enter integer"],
+    ["json", "10"]
+]]
 ]
     </pre>
 
     <script>
+
+        var program_json_example0 = [
+            "code_block",
+            ["console_log", ["json", "step 1.\n"]],
+            ["console_log", ["json", "step 2.\n"]],
+            ["console_log", ["json", "step 3.\n"]],
+            ["console_log", ["json", "step 4.\n"]],
+            ["console_log", ["json", "step 5.\n"]],
+            ["console_log", ["json", "end.\n"]]
+        ]
 
         var program_json_example1 = [
             "code_block",
@@ -54,7 +77,7 @@
             ]]
         ]
 
-        //program_text.textContent = JSON.stringify(program_json_example1, null, 1)
+        program_text.textContent = JSON.stringify(program_json_example0, null, 1)
 
         function js_function_call_list(call_list) {
             return globalThis[call_list[0]].call(globalThis, ...call_list.slice(1))
@@ -94,13 +117,55 @@
             console_write(text)
         }
 
-        types.code_block = function (item, namespace) {
-            var current_step = 0
-            for (var statement of item.slice(1)) {
-                console.log("current_step", current_step + 1)
-                evaluate(statement, namespace)
-                current_step += 1
+        var code_blocks = []
+
+        function next_step() {
+            setTimeout(step_of_code_block, 0)
+        }
+
+        function step_of_code_block() {
+
+            var code_block = code_blocks.at(-1)
+            if (!code_block) {
+                console_write("INFO: starting program.\n")
+                execute(parse(program_text.textContent))
+                return
             }
+
+            if (code_block.current_step >= code_block.steps.length) {
+                code_blocks.pop()
+                if (!code_blocks.length) console_write("INFO: program ended.\n")
+                return
+            }
+
+            var step = code_block.steps[code_block.current_step]
+
+            evaluate(step, code_block.namespace)
+
+            code_block.current_step++
+            document.all.UI_current_step.innerText = code_block.current_step
+
+            if (code_block.current_step >= code_block.steps.length) {
+                code_blocks.pop()
+                if (!code_blocks.length) console_write("INFO: program ended.\n")
+                return
+            }
+
+            var stop_at_every_step = document.all.UI_stop_at_every_step.checked
+            var current_is_breakpoint = document.all.UI_breakpoints_list.value.split(",").indexOf(code_block.current_step.toString()) != -1
+            var ignore_breakpoints = document.all.UI_ignore_breakpoints_list.checked
+            var stop_condition = stop_at_every_step || (!ignore_breakpoints && current_is_breakpoint)
+            if (!stop_condition) next_step()
+        }
+
+        types.code_block = function (item, namespace) {
+            var code_block = {}
+            code_block.current_step = 0
+            code_block.steps = item.slice(1)
+            code_block.namespace = namespace
+
+            code_blocks.push(code_block)
+            next_step()
         }
 
         types.if_then = function (item, namespace) {
@@ -159,7 +224,7 @@
     </script>
 
     <hr>
-    <script src="https://arkenidar.com/web/show-source.js" data-href="?show-source"></script>
+    <!-- <script src="https://arkenidar.com/web/show-source.js" data-href="?show-source"></script> -->
 
 </body>
 
