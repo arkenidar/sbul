@@ -12,40 +12,37 @@
     <div><a href="https://github.com/arkenidar/sbul">github.com/arkenidar/sbul</a></div>
 
     <button onclick="location.reload()">reload this</button>
-    <pre id="stdout"></pre>
+    <hr>
+    <div id="stdout"></div>
     <hr>
 
 
     <button onclick="next_step()">Go!</button>
     Current step <span id="UI_current_step">?</span>.
-    <button onclick="if(parse(program_text.textContent)) console_write('Current program was parsed fine.\n')">Parse
-        program.</button>
 
     <label> <input type="checkbox" id="UI_stop_at_every_step">stop at every step.</label>
     <button onclick="next_step()">next step</button>
+
     breakpoints list. e.g. : "2,4".
-    <input type="text" value="5,6,7" id="UI_breakpoints_list" placeholder="breakpoints e.g. 2,4">
+    <input type="text" value="" id="UI_breakpoints_list" placeholder="breakpoints e.g. 5,6,7">
+    
     <label> <input type="checkbox" id="UI_ignore_breakpoints_list">ignore the break-points in the list.</label>
 
+    <hr>
+    <button onclick="if(parse(program_text.textContent)) console_write('Current program was parsed fine.\n')">Parse
+        program.</button>
     <pre id="program_text" contenteditable="" style="border: 1px solid black; padding: 5px;">
 [
 "code_block",
-["comment", ["json", "test 1\n"]],
-["local_variable_set", ["json", "string_output"], ["json", ""]],
-["append", ["json", "string_output"], ["json", "count ( "]],
-["append", ["json", "string_output"], ["array_count", ["json", [1, 2, 3, 4]]]],
-["append", ["json", "string_output"], ["json", " )\n"]],
-["console_log", ["local_variable_get", ["json", "string_output"]]],
-["if_then",
-    ["json", true],
-    ["js_function", ["json", "alert"], ["json", "it works!"]]
-],
-["js_function", ["json", "alert"], ["js_function", ["json", "prompt"],
-    ["json", "enter integer"],
-    ["json", "10"]
-]]
+["console_log", ["json", "step 1.\n"]],
+["console_log", ["json", "step 2.\n"]],
+["console_log", ["json", "step 3.\n"]],
+["console_log", ["json", "step 4.\n"]],
+["console_log", ["json", "step 5.\n"]],
+["console_log", ["json", "program end.\n"]]
 ]
     </pre>
+    <hr>
 
     <script>
 
@@ -77,7 +74,7 @@
             ]]
         ]
 
-        program_text.textContent = JSON.stringify(program_json_example0, null, 1)
+        //program_text.textContent = JSON.stringify(program_json_example0, null, 1)
 
         function js_function_call_list(call_list) {
             return globalThis[call_list[0]].call(globalThis, ...call_list.slice(1))
@@ -86,7 +83,7 @@
         function console_write(...parameters) {
             console.log(...parameters)
             var text = parameters.join("|")
-            stdout.textContent += text
+            stdout.innerHTML += text.replace("\n", "<br>")
         }
 
         function evaluate(item, namespace) {
@@ -132,9 +129,13 @@
                 return
             }
 
-            if (code_block.current_step >= code_block.steps.length) {
+            function code_block_has_ended() {
                 code_blocks.pop()
-                if (!code_blocks.length) console_write("INFO: program ended.\n")
+                if (!code_blocks.length) console_write("INFO: program ended.\n<hr>")
+            }
+
+            if (code_block.current_step >= code_block.steps.length) {
+                code_block_has_ended()
                 return
             }
 
@@ -146,8 +147,7 @@
             document.all.UI_current_step.innerText = code_block.current_step
 
             if (code_block.current_step >= code_block.steps.length) {
-                code_blocks.pop()
-                if (!code_blocks.length) console_write("INFO: program ended.\n")
+                code_block_has_ended()
                 return
             }
 
@@ -224,7 +224,7 @@
     </script>
 
     <hr>
-    <!-- <script src="https://arkenidar.com/web/show-source.js" data-href="?show-source"></script> -->
+    <script src="https://arkenidar.com/web/show-source.js" data-href="?show-source"></script>
 
 </body>
 
