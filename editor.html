@@ -31,15 +31,15 @@
     <hr>
     <button onclick="if(parse(program_text.textContent)) console_write('Current program was parsed fine.\n')">Parse
         program.</button>
-    <pre id="program_text" contenteditable="" style="border: 1px solid black; padding: 5px;">
+    <pre id="program_text" contenteditable="" style="border: 1px solid black; padding: 5px;" oninput="program_input()">
 [
-"code_block",
-["console_log", ["json", "step 1.\n"]],
-["console_log", ["json", "step 2.\n"]],
-["console_log", ["json", "step 3.\n"]],
-["console_log", ["json", "step 4.\n"]],
-["console_log", ["json", "step 5.\n"]],
-["console_log", ["json", "program end.\n"]]
+"program",
+["write message", ["json", "step 1.\n"]],
+["write message", ["json", "step 2.\n"]],
+["write message", ["json", "step 3.\n"]],
+["write message", ["json", "step 4.\n"]],
+["write message", ["json", "step 5.\n"]],
+["write message", ["json", "program end.\n"]]
 ]
     </pre>
     <hr>
@@ -228,7 +228,11 @@
     <div id="UI_program_display"></div>
 
     <script>
-        var program_json_example1 = [
+
+        types["program"] = types.code_block
+        types["write message"] = types.console_log
+
+        var program_json_example2 = [
             "program",
             ["ignored note", ["json", "test 1\n"]],
             ["set contextual variable", ["json", "text output"], ["json", ""]],
@@ -267,6 +271,22 @@
             html += `<b>${program_json[0]}:</b> {{${sub_programs.join("<br>\n")}}}.</div>\n`
             return html
         }
+
+        ///
+
+        program_input()
+        function program_input() {
+
+            try {
+                var program_json = JSON.parse(program_text.textContent)
+                if (program_json) {
+                    document.all.UI_program_display.innerHTML = display_html(program_json, "1")
+                }
+            } catch (err) {
+                ///console_write(err.stack + "\n")
+            }
+        }
+
     </script>
 
     <style>
