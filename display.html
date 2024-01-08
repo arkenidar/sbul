@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title> display program </title>
+</head>
+
+<body>
+
+    <div id="UI_program_display"></div>
+
+    <script>
+        var program_json_example1 = [
+            "program",
+            ["ignored note", ["json", "test 1\n"]],
+            ["set contextual variable", ["json", "text output"], ["json", ""]],
+            ["append text", ["json", "text output"], ["json", "count ( "]],
+            ["append text", ["json", "text output"], ["conteggio sequenza", ["json", [1, 2, 3, 4]]]],
+            ["append text", ["json", "text output"], ["json", " )\n"]],
+            ["write message", ["contextual variable", ["json", "text output"]]],
+            ["if then",
+                ["json", true],
+                ["procedure", ["json", "message"], ["json", "it works!"]]
+            ],
+            ["procedure", ["json", "message"], ["procedure", ["json", "question"],
+                ["json", "enter integer"],
+                ["json", "10"]
+            ]]
+        ]
+
+        document.all.UI_program_display.innerHTML = display_html(program_json_example1)
+
+        function display_html(program_json) {
+            var html = ""
+            if (program_json[0] == "json") return `<div><i>${JSON.stringify(program_json[1])}</i>.</div>`
+            var sub_programs = program_json.slice(1).map(display_html)
+            html += `<div class="program"><b>${program_json[0]}:</b> {{${sub_programs.join("<br>")}}}.</div>`
+            return html
+        }
+    </script>
+
+    <style>
+        .program>.program {
+            padding-left: 5em;
+        }
+    </style>
+</body>
+
+</html>
