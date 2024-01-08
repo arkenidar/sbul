@@ -30,13 +30,25 @@
             ]]
         ]
 
-        document.all.UI_program_display.innerHTML = display_html(program_json_example1)
+        document.all.UI_program_display.innerHTML = display_html(program_json_example1, "1")
 
-        function display_html(program_json) {
-            var html = ""
-            if (program_json[0] == "json") return `<div><i>${JSON.stringify(program_json[1])}</i>.</div>`
-            var sub_programs = program_json.slice(1).map(display_html)
-            html += `<div class="program"><b>${program_json[0]}:</b> {{${sub_programs.join("<br>")}}}.</div>`
+        for (var program of document.querySelectorAll(".UI_program_identifier")) {
+            program.onclick = function (event) {
+                var dom_element = event.target//.parentElement
+                //alert(dom_element.dataset.program_identifier)
+                alert(dom_element.innerHTML)
+                event.stopPropagation()
+            }
+        }
+
+        function display_html(program_json, program_identifier) {
+            var html = `<div class="program" data-program_identifier="${program_identifier}"><button class="UI_program_identifier">${program_identifier}</button> `
+            if (program_json[0] == "json") {
+                html += `<i>${JSON.stringify(program_json[1])}</i>.</div>\n`
+                return html
+            }
+            var sub_programs = program_json.slice(1).map((program_json, index) => display_html(program_json, program_identifier + "," + (index + 1)))
+            html += `<b>${program_json[0]}:</b> {{${sub_programs.join("<br>\n")}}}.</div>\n`
             return html
         }
     </script>
