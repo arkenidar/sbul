@@ -224,62 +224,6 @@
     </script>
 
     <hr>
-
-    <div id="UI_program_display"></div>
-
-    <script>
-        var program_json_example1 = [
-            "program",
-            ["ignored note", ["json", "test 1\n"]],
-            ["set contextual variable", ["json", "text output"], ["json", ""]],
-            ["append text", ["json", "text output"], ["json", "count ( "]],
-            ["append text", ["json", "text output"], ["sequence size", ["json", [1, 2, 3, 4]]]],
-            ["append text", ["json", "text output"], ["json", " )\n"]],
-            ["write message", ["contextual variable", ["json", "text output"]]],
-            ["if then",
-                ["json", true],
-                ["procedure", ["json", "message"], ["json", "it works!"]]
-            ],
-            ["procedure", ["json", "message"], ["procedure", ["json", "question"],
-                ["json", "enter integer"],
-                ["json", "10"]
-            ]]
-        ]
-
-        document.all.UI_program_display.innerHTML = display_html(program_json_example1, "1")
-
-        for (var program of document.querySelectorAll(".UI_program_identifier")) {
-            program.onclick = function (event) {
-                var dom_element = event.target//.parentElement
-                //alert(dom_element.dataset.program_identifier)
-                alert(dom_element.innerHTML)
-                event.stopPropagation()
-            }
-        }
-
-        function display_html(program_json, program_identifier) {
-            var html = `<div class="program" data-program_identifier="${program_identifier}"><button class="UI_program_identifier">${program_identifier}</button> `
-            if (program_json[0] == "json") {
-                html += `<i>${JSON.stringify(program_json[1])}</i>.</div>\n`
-                return html
-            }
-            var sub_programs = program_json.slice(1).map((program_json, index) => display_html(program_json, program_identifier + "," + (index + 1)))
-            html += `<b>${program_json[0]}:</b> {{${sub_programs.join("<br>\n")}}}.</div>\n`
-            return html
-        }
-    </script>
-
-    <style>
-        .program>.program {
-            padding-left: 5em;
-        }
-
-        .program>b {
-            text-transform: capitalize;
-        }
-    </style>
-
-    <hr>
     <script src="https://arkenidar.com/web/show-source.js" data-href="?show-source"></script>
 
 </body>
