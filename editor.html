@@ -31,6 +31,8 @@
     <hr>
     <button onclick="if(parse(program_text.textContent)) console_write('Current program was parsed fine.\n')">Parse
         program.</button>
+    
+    <pre id="UI_program_parse_errors" contenteditable="" style="border: 1px solid black; padding: 5px;"></pre>
     <pre id="program_text" contenteditable="" style="border: 1px solid black; padding: 5px;" oninput="program_input()">
 [
 "program",
@@ -280,10 +282,12 @@
             try {
                 var program_json = JSON.parse(program_text.textContent)
                 if (program_json) {
+                    document.all.UI_program_parse_errors.textContent = "no parse errors now."
                     document.all.UI_program_display.innerHTML = display_html(program_json, "1")
                 }
             } catch (err) {
                 ///console_write(err.stack + "\n")
+                document.all.UI_program_parse_errors.textContent = err.stack
             }
         }
 
