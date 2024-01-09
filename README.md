@@ -1,3 +1,6 @@
+# The main file
+- https://arkenidar.github.io/sbul/editor.html
+
 # Files and their history and purpose
 - https://github.com/arkenidar/sbul/blob/main/screen.html first attempts with SBUL first versions (HTML part).
 - https://github.com/arkenidar/sbul/blob/main/behave.js first attempts with SBUL first versions (JS part).
