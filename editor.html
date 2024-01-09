@@ -20,7 +20,7 @@
     <button onclick="next_step()">Go!</button>
     Current step <span id="UI_current_step">?</span>.
 
-    <label> <input type="checkbox" id="UI_stop_at_every_step">stop at every step.</label>
+    <label> <input type="checkbox" id="UI_stop_at_every_step" checked="true">stop at every step.</label>
     <button onclick="next_step()">next step</button>
 
     breakpoints list. e.g. : "2,4".
@@ -31,7 +31,7 @@
     <hr>
     <button onclick="if(parse(program_text.textContent)) console_write('Current program was parsed fine.\n')">Parse
         program.</button>
-    
+
     <pre id="UI_program_parse_errors" contenteditable="" style="border: 1px solid black; padding: 5px;"></pre>
     <pre id="program_text" contenteditable="" style="border: 1px solid black; padding: 5px;" oninput="program_input()">
 [
@@ -146,6 +146,9 @@
             evaluate(step, code_block.namespace)
 
             code_block.current_step++
+            //alert(identifier_of_current_step())
+            program_input()
+
             document.all.UI_current_step.innerText = code_block.current_step
 
             if (code_block.current_step >= code_block.steps.length) {
@@ -227,6 +230,10 @@
 
     <hr>
 
+    <button onclick="next_step()">next step</button>
+    
+    <hr>
+
     <div id="UI_program_display"></div>
 
     <script>
@@ -263,8 +270,18 @@
             }
         }
 
+        function identifier_of_current_step() {
+            var levels = [1]
+            for (var code_block of code_blocks) {
+                levels.push(code_block.current_step)
+            }
+            return levels.join(",")
+        }
+
         function display_html(program_json, program_identifier) {
-            var html = `<div class="program" data-program_identifier="${program_identifier}"><button class="UI_program_identifier">${program_identifier}</button> `
+            var button_class = ""
+            if (identifier_of_current_step() == program_identifier) button_class = "current_step"
+            var html = `<div class="program" data-program_identifier="${program_identifier}"><button class="UI_program_identifier ${button_class}">${program_identifier}</button> `
             if (program_json[0] == "json") {
                 html += `<i>${JSON.stringify(program_json[1])}</i>.</div>\n`
                 return html
@@ -300,6 +317,10 @@
 
         .program>b {
             text-transform: capitalize;
+        }
+
+        .current_step {
+            background-color: red;
         }
     </style>
 
