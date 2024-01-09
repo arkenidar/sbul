@@ -35,8 +35,14 @@
     <button onclick="if(parse(program_text.textContent)) console_write('Current program was parsed fine.\n')">Parse
         program.</button>
 
-    <pre id="UI_program_parse_errors" contenteditable="" style="border: 1px solid black; padding: 5px;"></pre>
-    <pre id="program_text" contenteditable="" style="border: 1px solid black; padding: 5px;" oninput="program_input()">
+    <style>
+        .area {
+            border: 1px solid black;
+            padding: 5px;
+        }
+    </style>
+    <pre id="UI_program_parse_errors" contenteditable="" class="area"></pre>
+    <pre id="program_text" contenteditable="" class="area" oninput="program_input()">
 [
 "program",
 ["ignored note", ["json", "test 1\n"]],
